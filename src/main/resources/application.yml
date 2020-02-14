@@ -1,2 +1,28 @@
 server:
    port: 8081
+spring:
+   jackson:
+     date-format: yyyy-MM-dd
+     time-zone: GMT+8
+   http:
+     encoding:
+       charset: UTF-8
+       force: false
+family:
+  family-name: "happy \n family"
+  father:
+    name: wangliang
+    age: ${random.int}
+  mother:
+    alias:
+      - lovely
+      - alies
+  chile:
+    name: kabe
+    age: ${family.father.age:5}
+    friends:
+      - hobby: football
+        sex: male
+      - hobby: baseball
+        sex: female
+
