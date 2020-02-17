@@ -2,12 +2,14 @@ package com.wang.springbootstudey.controller;
 
 import com.wang.springbootstudey.model.AjaxResponse;
 import com.wang.springbootstudey.model.Article;
+import com.wang.springbootstudey.service.ArticleRestService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -17,42 +19,62 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/rest")
 public class ArticleRestController {
 
+    @Resource(name="articleRestJDBCServiceImpl")
+    ArticleRestService articleRestService;
 
-    //增加一篇Article ，使用POST方法
-    @RequestMapping(value = "/article", method = POST, produces = "application/json")
-    public AjaxResponse saveArticle(@RequestBody Article article) {
-        //因为使用了lombok的Slf4j注解，这里可以直接使用log变量打印日志
-        log.info("saveArticle：{}",article);
+
+    @ApiOperation(value = "添加文章", notes = "添加新的文章", tags = "Article",httpMethod = "POST")
+    @ApiResponses({
+            @ApiResponse(code=200,message="成功",response=AjaxResponse.class),
+            @ApiResponse(code=400,message="用户输入错误",response=AjaxResponse.class),
+            @ApiResponse(code=500,message="系统内部错误",response=AjaxResponse.class)
+    })
+    //@RequestMapping(value = "/article", method = POST, produces = "application/json")
+    @PostMapping("/article")
+    public @ResponseBody  AjaxResponse saveArticle(@RequestBody Article article) {
+    /*public @ResponseBody  AjaxResponse saveArticle(@RequestParam String  id,
+                                                   @RequestParam String  author) {*/
+
+
+        log.info("articleRestService return :" + articleRestService.saveArticle(article));
+
         return  AjaxResponse.success(article);
     }
 
+    //@RequestMapping(value = "/article/{id}", method = DELETE, produces = "application/json")
+    @DeleteMapping("/article/{id}")
+    public @ResponseBody AjaxResponse deleteArticle(@PathVariable Long id) {
 
-    //删除一篇Article，使用DELETE方法，参数是id
-    @RequestMapping(value = "/article/{id}", method = DELETE, produces = "application/json")
-    public AjaxResponse deleteArticle(@PathVariable Long id) {
-        log.info("deleteArticle：{}",id);
+        articleRestService.deleteArticle(id);
+
         return AjaxResponse.success(id);
     }
 
-    //更新一篇Article，使用PUT方法，以id为主键进行更新
-    @RequestMapping(value = "/article/{id}", method = PUT, produces = "application/json")
-    public AjaxResponse updateArticle(@PathVariable Long id, @RequestBody Article article) {
+    //@RequestMapping(value = "/article/{id}", method = PUT, produces = "application/json")
+    @PutMapping("/article/{id}")
+    public @ResponseBody AjaxResponse updateArticle(@PathVariable Long id, @RequestBody Article article) {
         article.setId(id);
-        log.info("updateArticle：{}",article);
+
+        articleRestService.updateArticle(article);
+
         return AjaxResponse.success(article);
     }
 
-    //获取一篇Article，使用GET方法
-    @RequestMapping(value = "/article/{id}", method = GET, produces = "application/json")
-    public AjaxResponse getArticle(@PathVariable Long id) {
 
-        //使用lombok提供的builder构建对象
-        Article article1 = Article.builder()
-                .id(1L)
-                .author("zimug")
-                .content("spring boot 2.深入浅出")
-                .createTime(new Date())
-                .title("t1").build();
-        return AjaxResponse.success(article1);
+
+    //@RequestMapping(value = "/article/{id}", method = GET, produces = "application/json")
+    @GetMapping( "/article/{id}")
+    public @ResponseBody  AjaxResponse getArticle(@PathVariable Long id) {
+
+        return AjaxResponse.success(articleRestService.getArticle(id));
+    }
+
+
+    //@RequestMapping(value = "/article", method = GET, produces = "application/json")
+    @GetMapping( "/article")
+    public @ResponseBody  AjaxResponse getAllArticle() {
+
+        return AjaxResponse.success(articleRestService.getAll());
     }
 }
+
