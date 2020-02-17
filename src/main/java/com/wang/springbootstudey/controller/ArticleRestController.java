@@ -1,7 +1,7 @@
 package com.wang.springbootstudey.controller;
 
 import com.wang.springbootstudey.model.AjaxResponse;
-import com.wang.springbootstudey.model.Article;
+import com.wang.springbootstudey.model.ArticleVO;
 import com.wang.springbootstudey.service.ArticleRestService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -10,16 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
-
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/rest")
 public class ArticleRestController {
 
-    @Resource(name="articleRestJDBCServiceImpl")
+    @Resource(name="articleMybatisRestServiceImpl")
     ArticleRestService articleRestService;
 
 
@@ -31,7 +28,7 @@ public class ArticleRestController {
     })
     //@RequestMapping(value = "/article", method = POST, produces = "application/json")
     @PostMapping("/article")
-    public @ResponseBody  AjaxResponse saveArticle(@RequestBody Article article) {
+    public @ResponseBody  AjaxResponse saveArticle(@RequestBody ArticleVO article) {
     /*public @ResponseBody  AjaxResponse saveArticle(@RequestParam String  id,
                                                    @RequestParam String  author) {*/
 
@@ -52,7 +49,7 @@ public class ArticleRestController {
 
     //@RequestMapping(value = "/article/{id}", method = PUT, produces = "application/json")
     @PutMapping("/article/{id}")
-    public @ResponseBody AjaxResponse updateArticle(@PathVariable Long id, @RequestBody Article article) {
+    public @ResponseBody AjaxResponse updateArticle(@PathVariable Long id, @RequestBody ArticleVO article) {
         article.setId(id);
 
         articleRestService.updateArticle(article);
